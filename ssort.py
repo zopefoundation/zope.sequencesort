@@ -16,7 +16,6 @@ eg Sort(sequence, (("akey", "nocase"), ("anotherkey", "cmp", "desc")))
 
 $Id$
 """
-
 from types import TupleType
 
 def sort(sequence, sort=(), _=None, mapping=0):
@@ -125,8 +124,6 @@ def sort(sequence, sort=(), _=None, mapping=0):
     return sequence
 
 
-SortEx = sort
-
 basic_type={type(''): 1, type(0): 1, type(0.0): 1, type(()): 1, type([]): 1,
             type(None) : 1 }.has_key
 
@@ -172,7 +169,11 @@ def make_sortfunctions(sortfields, _):
         elif f_name in ("locale_nocase", "strcoll_nocase"):
             func = strcoll_nocase
         else: # no - look it up in the namespace
-            func = _.getitem(f_name, 0)
+            if hasattr(_, 'getitem'):
+                # support for zope.documenttemplate.dt_util.TemplateDict
+                func = _.getitem(f_name, 0)
+            else:
+                func = _[f_name]
 
         sort_order = f[2].lower()
 
