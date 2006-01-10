@@ -21,24 +21,24 @@ class TestCase(unittest.TestCase):
     """Test zope.sequencesort.sort()
     """
 
-    def test1( self ):
+    def test1(self):
         assert res1==ssort.sort(wordlist)
 
-    def test2( self ):
+    def test2(self):
         assert res2==ssort.sort(wordlist, (("key",),), mapping=1)
 
-    def test3( self ):
+    def test3(self):
         assert res3==ssort.sort(wordlist, (("key", "cmp"),), mapping=1)
 
-    def test4( self ):
+    def test4(self):
         assert res4==ssort.sort(wordlist, (("key", "cmp", "desc"),),
                                 mapping=1)
 
-    def test5( self ):
+    def test5(self):
         assert res5==ssort.sort(wordlist, (("weight",), ("key",)),
                                 mapping=1)
 
-    def test6( self ):
+    def test6(self):
         assert res6==ssort.sort(wordlist,
                                 (("weight",),
                                  ("key", "nocase", "desc")),
