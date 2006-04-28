@@ -11,4 +11,4 @@
 #
 ##############################################################################
 
-from ssort import sort
+from zope.sequencesort.ssort import sort

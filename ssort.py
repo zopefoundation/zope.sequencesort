@@ -124,6 +124,8 @@ def sort(sequence, sort=(), _=None, mapping=0):
     return sequence
 
 
+SortEx = sort
+
 basic_type={type(''): 1, type(0): 1, type(0.0): 1, type(()): 1, type([]): 1,
             type(None) : 1 }.has_key
 
