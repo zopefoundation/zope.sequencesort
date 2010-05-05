@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2007 Zope Corporation and Contributors.
+# Copyright (c) 2007 Zope Foundation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -28,7 +28,7 @@ def read(*rnames):
 
 setup(name="zope.sequencesort",
       version = '3.4.1dev',
-      author='Zope Corporation and Contributors',
+      author='Zope Foundation and Contributors',
       author_email='zope3-dev@zope.org',
       description='Sequence Sorting',
       long_description=(
