@@ -17,8 +17,6 @@
 # Zope Toolkit policies as described by this documentation.
 ##############################################################################
 """zope.sequencesort setup
-
-$Id$
 """
 import os
 from setuptools import setup, find_packages

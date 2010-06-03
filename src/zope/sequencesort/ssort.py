@@ -13,8 +13,6 @@
 """
 Advanced sort support by Oleg Broytmann <phd@@phd.pp.ru> 23 Apr 2001
 eg Sort(sequence, (("akey", "nocase"), ("anotherkey", "cmp", "desc")))
-
-$Id$
 """
 from types import TupleType
 
