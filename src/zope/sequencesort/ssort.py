@@ -165,7 +165,7 @@ import sys
 if sys.modules.has_key("locale"): # only if locale is already imported
     from locale import strcoll
 
-    def strcoll_nocase(str1, str2):
+    def strcoll_nocase(str1, str2): #pragma NO COVER XXX global locale
         return strcoll(str1.lower(), str2.lower())
 
 
@@ -187,7 +187,7 @@ def make_sortfunctions(sortfields, _):
             pass
         else:
             raise SyntaxError(
-                "sort option must contains no more than 2 fields")
+                "sort option: (Key [,sorter_name [,direction]])")
 
         f_name = f[1]
 
