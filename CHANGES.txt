@@ -1,7 +1,7 @@
 ``zope.sequencesort`` Changelog
 ===============================
 
-4.0.0 (unreleased)
+4.0.0 (2013-02-28)
 ------------------
 
 - Added ``setup.py docs`` alias (installs ``Sphinx`` and dependencies).
