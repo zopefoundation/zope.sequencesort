@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-import os, sys, unittest
+import unittest
 
 from zope.sequencesort import ssort
 from zope.sequencesort.tests.ztestlib import *
@@ -20,6 +20,9 @@ from zope.sequencesort.tests.results import *
 class TestCase(unittest.TestCase):
     """Test zope.sequencesort.sort()
     """
+    def _callFUT(self, *args, **kw):
+        from zope.sequencesort.ssort import sort
+        return sort(*args, **kw)
 
     def test1(self):
         assert res1==ssort.sort(wordlist)
@@ -59,6 +62,3 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestCase))
     return suite
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')
