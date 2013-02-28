@@ -99,7 +99,7 @@ def sort(sequence, sort=(), _=None, mapping=0):
                             akey = getattr(v, sk)
                     except (AttributeError, KeyError):
                         akey = None
-                    if not basic_type(type(akey)):
+                    if type(akey) not in BASIC_TYPES:
                         try:
                             akey = akey()
                         except:
@@ -113,7 +113,7 @@ def sort(sequence, sort=(), _=None, mapping=0):
                         k = getattr(v, sort)
                 except (AttributeError, KeyError):
                     k = None
-                if not basic_type(type(k)):
+                if type(k) not in BASIC_TYPES:
                     try:
                         k = k()
                     except:
@@ -135,14 +135,14 @@ def sort(sequence, sort=(), _=None, mapping=0):
 
 SortEx = sort
 
-basic_type = {
+BASIC_TYPES = {
     type(''): 1,
     type(0): 1,
     type(0.0): 1,
     type(()): 1,
     type([]): 1,
     type(None) : 1,
-}.has_key
+}
 
 def nocase(str1, str2):
     return cmp(str1.lower(), str2.lower())
@@ -208,7 +208,7 @@ def make_sortfunctions(sortfields, _):
     return sf_list
 
 
-class SortBy:
+class SortBy(object):
     def __init__(self, multsort, sf_list):
         self.multsort = multsort
         self.sf_list = sf_list
