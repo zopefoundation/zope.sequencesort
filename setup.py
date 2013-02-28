@@ -58,9 +58,8 @@ setup(name="zope.sequencesort",
       packages=find_packages('src'),
       package_dir = {'': 'src'},
       namespace_packages=['zope'],
-      extras_require = dict(
-          test=['zope.testing',
-                ]),
+      extras_require={'testing': ['nose', 'coverage'],
+                     },
       install_requires = ['setuptools'],
       include_package_data=True,
       zip_safe = False

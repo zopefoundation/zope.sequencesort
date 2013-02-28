@@ -5,6 +5,11 @@ CHANGES
 4.0.0 (unreleased)
 ------------------
 
+- Added 'setup.py dev' alias (runs ``setup.py develop`` plus installs
+  ``nose`` and ``coverage``).
+
+- Dropped spurios ``test`` extra requirement on ``zope.testing``.
+
 - 100% unit test coverage.
 
 - Added support for PyPy, Python 3.2 / 3.2.
