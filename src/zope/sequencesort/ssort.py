@@ -223,8 +223,10 @@ class SortBy:
         l = len(sf_list)
 
         # assert that o1 and o2 are tuples of apropriate length
-        assert len(o1) == l + 1 - multsort, "%s, %d" % (o1, l + multsort)
-        assert len(o2) == l + 1 - multsort, "%s, %d" % (o2, l + multsort)
+        if len(o1) != l + 1 - multsort:
+            raise ValueError("%s, %d" % (o1, l + multsort))
+        if len(o2) != l + 1 - multsort:
+            raise ValueError("%s, %d" % (o2, l + multsort))
 
         # now run through the list of functions in sf_list and
         # compare every object in o1 and o2
