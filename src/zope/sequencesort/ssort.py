@@ -82,7 +82,7 @@ def sort(sequence, sort=(), _=None, mapping=0):
 
     isort = not sort
 
-    s=[]
+    s = []
     for client in sequence:
         k = None
         if type(client) == TupleType and len(client) == 2:
