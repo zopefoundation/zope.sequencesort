@@ -16,6 +16,12 @@ e.g .Sort(sequence, (("akey", "nocase"), ("anotherkey", "cmp", "desc")))
 """
 from types import TupleType
 
+try:
+    cmp
+except NameError: #pragma NO COVER Py3k
+    def cmp(lhs, rhs):
+        return int(rhs < lhs) - int(lhs < rhs)
+
 def sort(sequence, sort=(), _=None, mapping=0):
     """Return a sorted copy of 'sequence'.
 
