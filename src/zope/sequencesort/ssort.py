@@ -196,9 +196,9 @@ def make_sortfunctions(sortfields, _):
             func = cmp # builtin
         elif f_name == "nocase":
             func = nocase
-        elif f_name in ("locale", "strcoll"):
+        elif f_name in ("locale", "strcoll"): #pragma NO COVER
             func = strcoll
-        elif f_name in ("locale_nocase", "strcoll_nocase"):
+        elif f_name in ("locale_nocase", "strcoll_nocase"): #pragma NO COVER
             func = strcoll_nocase
         else: # no - look it up in the namespace
             if hasattr(_, 'getitem'):
@@ -250,7 +250,8 @@ class SortBy(object):
             c1, c2 = o1[i], o2[i]
             func, multiplier = sf_list[i][1:3]
             n = func(c1, c2)
-            if n: return n*multiplier
+            if n:
+                return n * multiplier
 
         # all functions returned 0 - identical sequences
         return 0
