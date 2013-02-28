@@ -143,12 +143,20 @@ SortEx = sort
 
 BASIC_TYPES = {
     type(''): 1,
+    type(b''): 1,
     type(0): 1,
     type(0.0): 1,
     type(()): 1,
     type([]): 1,
     type(None) : 1,
 }
+
+try:
+    unicode
+except NameError: #pragma NO COVER Py3k
+    pass
+else: #pragma NO COVER Python 2
+    BASIC_TYPES[unicode] = 1
 
 def nocase(str1, str2):
     return cmp(str1.lower(), str2.lower())
