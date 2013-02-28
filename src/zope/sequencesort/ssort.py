@@ -10,14 +10,15 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""
-Advanced sort support by Oleg Broytmann <phd@@phd.pp.ru> 23 Apr 2001
-eg Sort(sequence, (("akey", "nocase"), ("anotherkey", "cmp", "desc")))
+"""Advanced sort support
+
+e.g .Sort(sequence, (("akey", "nocase"), ("anotherkey", "cmp", "desc")))
 """
 from types import TupleType
 
 def sort(sequence, sort=(), _=None, mapping=0):
-    """
+    """Return a sorted copy of 'sequence'.
+
     - sequence is a sequence of objects to be sorted
 
     - sort is a sequence of tuples (key,func,direction)
@@ -44,14 +45,13 @@ def sort(sequence, sort=(), _=None, mapping=0):
       - direction -- defines the sort direction for the key (optional).
         (allowed values: "asc" (default) , "desc")
     """
-
-
-
     need_sortfunc = 0
+
     if sort:
         for s in sort:
             if len(s) > 1: # extended sort if there is reference to...
-                # ...comparison function or sort order, even if they are "cmp" and "asc"
+                # ...comparison function or sort order, even if they are
+                # "cmp" and "asc"
                 need_sortfunc = 1
                 break
 
@@ -74,39 +74,50 @@ def sort(sequence, sort=(), _=None, mapping=0):
         else:
             sort = sort[0][0]
 
-    isort=not sort
+    isort = not sort
 
     s=[]
     for client in sequence:
         k = None
-        if type(client)==TupleType and len(client)==2:
-            if isort: k=client[0]
-            v=client[1]
+        if type(client) == TupleType and len(client) == 2:
+            if isort:
+                k = client[0]
+            v = client[1]
         else:
-            if isort: k=client
-            v=client
+            if isort:
+                k = client
+            v = client
 
         if sort:
             if multsort: # More than one sort key.
                 k = []
                 for sk in sortfields:
                     try:
-                        if mapping: akey = v[sk]
-                        else: akey = getattr(v, sk)
+                        if mapping:
+                            akey = v[sk]
+                        else:
+                            akey = getattr(v, sk)
                     except (AttributeError, KeyError):
                         akey = None
                     if not basic_type(type(akey)):
-                        try: akey = akey()
-                        except: pass
+                        try:
+                            akey = akey()
+                        except:
+                            pass
                     k.append(akey)
             else: # One sort key.
                 try:
-                    if mapping: k = v[sort]
-                    else: k = getattr(v, sort)
-                except (AttributeError, KeyError): k = None
+                    if mapping:
+                        k = v[sort]
+                    else:
+                        k = getattr(v, sort)
+                except (AttributeError, KeyError):
+                    k = None
                 if not basic_type(type(k)):
-                    try: k = k()
-                    except: pass
+                    try:
+                        k = k()
+                    except:
+                        pass
 
         s.append((k,client))
 
@@ -116,7 +127,7 @@ def sort(sequence, sort=(), _=None, mapping=0):
     else:
         s.sort()
 
-    sequence=[]
+    sequence = []
     for k, client in s:
         sequence.append(client)
     return sequence
@@ -124,8 +135,14 @@ def sort(sequence, sort=(), _=None, mapping=0):
 
 SortEx = sort
 
-basic_type={type(''): 1, type(0): 1, type(0.0): 1, type(()): 1, type([]): 1,
-            type(None) : 1 }.has_key
+basic_type = {
+    type(''): 1,
+    type(0): 1,
+    type(0.0): 1,
+    type(()): 1,
+    type([]): 1,
+    type(None) : 1,
+}.has_key
 
 def nocase(str1, str2):
     return cmp(str1.lower(), str2.lower())
@@ -155,7 +172,8 @@ def make_sortfunctions(sortfields, _):
         elif l == 3:
             pass
         else:
-            raise SyntaxError, "sort option must contains no more than 2 fields"
+            raise SyntaxError(
+                "sort option must contains no more than 2 fields")
 
         f_name = f[1]
 
@@ -182,7 +200,8 @@ def make_sortfunctions(sortfields, _):
         elif sort_order == "desc":
             multiplier = -1
         else:
-            raise SyntaxError, "sort direction must be either ASC or DESC"
+            raise SyntaxError(
+                "sort direction must be either ASC or DESC")
 
         sf_list.append((f[0], func, multiplier))
 
