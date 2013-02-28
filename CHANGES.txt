@@ -1,6 +1,5 @@
-=======
-CHANGES
-=======
+``zope.sequencesort`` Changelog
+===============================
 
 4.0.0 (unreleased)
 ------------------
@@ -21,4 +20,4 @@ CHANGES
 3.4.0 (2007-10-03)
 ------------------
 
-- Initial release independent of the main Zope tree.
+- Initial release independent of the main Zope3 tree.
