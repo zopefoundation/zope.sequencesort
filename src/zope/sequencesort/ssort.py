@@ -175,21 +175,21 @@ def make_sortfunctions(sortfields, _):
 
     sf_list = []
     for field in sortfields:
-        f = list(field)
-        l = len(f)
+        info = list(field)
+        i_len = len(info)
 
-        if l == 1:
-            f.append("cmp")
-            f.append("asc")
-        elif l == 2:
-            f.append("asc")
-        elif l == 3:
+        if i_len == 1:
+            info.append("cmp")
+            info.append("asc")
+        elif i_len == 2:
+            info.append("asc")
+        elif i_len == 3:
             pass
         else:
             raise SyntaxError(
                 "sort option: (Key [,sorter_name [,direction]])")
 
-        f_name = f[1]
+        f_name = info[1]
 
         # predefined function?
         if f_name == "cmp":
@@ -207,7 +207,7 @@ def make_sortfunctions(sortfields, _):
             else:
                 func = _[f_name]
 
-        sort_order = f[2].lower()
+        sort_order = info[2].lower()
 
         if sort_order == "asc":
             multiplier = +1
@@ -217,7 +217,7 @@ def make_sortfunctions(sortfields, _):
             raise SyntaxError(
                 "sort direction must be either ASC or DESC")
 
-        sf_list.append((f[0], func, multiplier))
+        sf_list.append((info[0], func, multiplier))
 
     return sf_list
 
@@ -228,27 +228,28 @@ class SortBy(object):
         self.sf_list = sf_list
 
     def __call__(self, o1, o2):
-        multsort = self.multsort
-        if multsort:
+        n_fields = len(self.sf_list)
+        if self.multsort:
             o1 = o1[0] # if multsort - take the first element (key list)
             o2 = o2[0]
+            req_len = n_fields
+        else:
+            req_len = n_fields + 1
 
-        sf_list = self.sf_list
-        l = len(sf_list)
 
         # assert that o1 and o2 are tuples of apropriate length
-        if len(o1) != l + 1 - multsort:
-            raise ValueError("%s, %d" % (o1, l + multsort))
-        if len(o2) != l + 1 - multsort:
-            raise ValueError("%s, %d" % (o2, l + multsort))
+        if len(o1) != req_len:
+            raise ValueError("%s, %d" % (o1, req_len))
+        if len(o2) != req_len:
+            raise ValueError("%s, %d" % (o2, req_len))
 
         # now run through the list of functions in sf_list and
         # compare every object in o1 and o2
-        for i in range(l):
+        for i in range(n_fields):
             # if multsort - we already extracted the key list
             # if not multsort - i is 0, and the 0th element is the key
             c1, c2 = o1[i], o2[i]
-            func, multiplier = sf_list[i][1:3]
+            func, multiplier = self.sf_list[i][1:3]
             n = func(c1, c2)
             if n:
                 return n * multiplier
