@@ -5,10 +5,12 @@ CHANGES
 4.0.0 (unreleased)
 ------------------
 
-- Added 'setup.py dev' alias (runs ``setup.py develop`` plus installs
+- Added ``setup.py docs`` alias (installs ``Sphinx`` and dependencies).
+
+- Added ``setup.py dev`` alias (runs ``setup.py develop`` plus installs
   ``nose`` and ``coverage``).
 
-- Dropped spurios ``test`` extra requirement on ``zope.testing``.
+- Dropped spurious ``test`` extra requirement on ``zope.testing``.
 
 - 100% unit test coverage.
 
