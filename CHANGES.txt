@@ -5,6 +5,8 @@ CHANGES
 4.0.0 (unreleased)
 ------------------
 
+- 100% unit test coverage.
+
 - Added support for PyPy, Python 3.2 / 3.2.
 
 - Dropped support for Python 2.4 / 2.5.

@@ -169,6 +169,24 @@ class Test_sort(unittest.TestCase):
                                 mapping=1
                                 ), RES_W_CUSTOM_COMPARATOR)
 
+    def test_w_custom_comparator_dtml_namespace(self):
+        class Namespace(object):
+            def __init__(self, **kw):
+                self.__dict__.update(kw)
+            def getitem(self, name, default):
+                return getattr(self, name, default)
+
+        def myCmp(s1, s2):
+            return -cmp(s1, s2)
+
+        ns = Namespace(myCmp=myCmp)
+
+        self.assertEqual(self._callFUT(WORDLIST,
+                                (("weight",), ("key", "myCmp", "desc")),
+                                ns,
+                                mapping=1
+                                ), RES_W_CUSTOM_COMPARATOR)
+
 
 class Test_make_sortfunctions(unittest.TestCase):
     """Test zope.sequencesort.sort()
@@ -180,6 +198,68 @@ class Test_make_sortfunctions(unittest.TestCase):
     def test_w_too_many_values(self):
         self.assertRaises(SyntaxError, self._callFUT,
                           (('bar', 'cmp', 'asc', 'bogus'),), None)
+
+    def test_w_bogus_direction(self):
+        self.assertRaises(SyntaxError, self._callFUT,
+                          (('bar', 'cmp', 'bogus'),), None)
+
+
+class SortByTests(unittest.TestCase):
+    """Test zope.sequencesort.sort()
+    """
+    def _getTargetClass(self):
+        from zope.sequencesort.ssort import SortBy
+        return SortBy
+
+    def _makeOne(self, multisort, sf_list):
+        return self._getTargetClass()(multisort, sf_list)
+
+    def _makeField(self, name, _cmp=None, multiplier=1):
+        if _cmp is None:
+            try:
+                _cmp = cmp
+            except NameError: #pragma NO COVER Py3k
+                def _cmp(lhs, rhs):
+                    return int(rhs < lhs) - int(lhs < rhs)
+        return (name, _cmp, multiplier)
+
+    def test_invalid_length_single(self):
+        sb = self._makeOne(False, [self._makeField('bar')])
+        self.assertRaises(ValueError, sb, [], ['b'])
+        self.assertRaises(ValueError, sb, ['a'], [])
+        self.assertRaises(ValueError, sb, ['a', 'c'], ['b'])
+        self.assertRaises(ValueError, sb, ['a'], ['b', 'c'])
+
+    def test_single(self):
+        sb = self._makeOne(False, [self._makeField('bar')])
+        self.assertEqual(sb(['a', 'q'], ['b', 'p']), -1)
+        self.assertEqual(sb(['a', 'q'], ['a', 'r']), 0)
+        self.assertEqual(sb(['b', 'p'], ['a', 'q']), 1)
+
+    def test_invalid_length_multiple(self):
+        sb = self._makeOne(True, [self._makeField('bar'),
+                                  self._makeField('baz', multiplier=-1)])
+        self.assertRaises(ValueError, sb,
+                          ([], None), (['b', 'c'], None))
+        self.assertRaises(ValueError, sb,
+                          (['a'], None), (['b', 'c'], None))
+        self.assertRaises(ValueError, sb,
+                          (['a', 'b', 'c'], None), (['b', 'c'], None))
+        self.assertRaises(ValueError, sb,
+                          (['a', 'c'], None), ([], None))
+        self.assertRaises(ValueError, sb,
+                          (['a', 'c'], None), (['b'], None))
+        self.assertRaises(ValueError, sb,
+                          (['a', 'c'], None), (['b', 'd', 'e'], None))
+
+    def test_multiple(self):
+        sb = self._makeOne(True, [self._makeField('bar'),
+                                  self._makeField('baz', multiplier=-1)])
+        self.assertEqual(sb((['a', 'q'], None), (['b', 'p'], None)), -1)
+        self.assertEqual(sb((['a', 'r'], None), (['a', 'q'], None)), -1)
+        self.assertEqual(sb((['a', 'q'], None), (['a', 'q'], None)), 0)
+        self.assertEqual(sb((['a', 'q'], None), (['a', 'r'], None)), 1)
+        self.assertEqual(sb((['b', 'p'], None), (['a', 'q'], None)), 1)
 
 
 WORDLIST = [
@@ -419,4 +499,5 @@ def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(Test_sort),
         unittest.makeSuite(Test_make_sortfunctions),
+        unittest.makeSuite(SortByTests),
     ))
