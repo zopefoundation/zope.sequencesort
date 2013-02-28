@@ -20,6 +20,120 @@ class Test_sort(unittest.TestCase):
         from zope.sequencesort.ssort import sort
         return sort(*args, **kw)
 
+    def test_w_2_tuples(self):
+        TUPLES = [('b', 'Bharney'), ('a', 'Phred')]
+        self.assertEqual(self._callFUT(TUPLES), sorted(TUPLES))
+
+    def test_w_attributes(self):
+        class Foo(object):
+            def __init__(self, bar):
+                self.bar = bar
+        TO_SORT = [Foo('b'), Foo('a'), Foo('c')]
+        result = self._callFUT(TO_SORT, (('bar',),))
+        self.assertEqual([x.bar for x in result], ['a', 'b', 'c'])
+
+    def test_w_attributes_nocase(self):
+        class Foo(object):
+            def __init__(self, bar):
+                self.bar = bar
+        TO_SORT = [Foo('b'), Foo('A'), Foo('C')]
+        result = self._callFUT(TO_SORT, (('bar', 'nocase'),))
+        self.assertEqual([x.bar for x in result], ['A', 'b', 'C'])
+
+    def test_w_attributes_missing(self):
+        class Foo(object):
+            def __init__(self, bar):
+                self.bar = bar
+        TO_SORT = [Foo('b'), Foo('a'), Foo('c'), object()]
+        result = self._callFUT(TO_SORT, (('bar',),))
+        self.assertEqual([getattr(x, 'bar', 'ZZZ') for x in result],
+                          ['ZZZ', 'a', 'b', 'c'])
+
+    def test_w_multi_attributes(self):
+        class Foo(object):
+            def __init__(self, bar, baz):
+                self.bar = bar
+                self.baz = baz
+        TO_SORT = [Foo('b', 'q'), Foo('a', 'r'), Foo('c', 's'), Foo('a', 'p')]
+        result = self._callFUT(TO_SORT, (('bar',), ('baz',)))
+        self.assertEqual([(x.bar, x.baz) for x in result],
+                          [('a', 'p'), ('a', 'r'), ('b', 'q'), ('c', 's')])
+
+    def test_w_multi_attributes_nocase(self):
+        class Foo(object):
+            def __init__(self, bar, baz):
+                self.bar = bar
+                self.baz = baz
+        TO_SORT = [Foo('b', 'q'), Foo('a', 'R'), Foo('c', 's'), Foo('a', 'p')]
+        result = self._callFUT(TO_SORT, (('bar',), ('baz', 'nocase'),))
+        self.assertEqual([(x.bar, x.baz) for x in result],
+                          [('a', 'p'), ('a', 'R'), ('b', 'q'), ('c', 's')])
+
+    def test_w_multi_attributes_missing(self):
+        class Foo(object):
+            def __init__(self, bar, baz):
+                self.bar = bar
+                self.baz = baz
+        TO_SORT = [Foo('b', 'q'), Foo('a', 'r'), object(), Foo('a', 'p')]
+        result = self._callFUT(TO_SORT, (('bar',), ('baz',)))
+        self.assertEqual([(getattr(x, 'bar', 'ZZZ'), getattr(x, 'baz', 'YYY'))
+                                for x in result],
+                          [('ZZZ', 'YYY'), ('a', 'p'), ('a', 'r'), ('b', 'q')])
+
+    def test_w_non_basictype_key(self):
+        class Qux(object):
+            def __init__(self, spam):
+                self._spam = spam
+            def __cmp__(self, other):
+                return cmp(self._spam, other._spam)
+            def __lt__(self, other):
+                return self._spam < other._spam
+        class Foo(object):
+            def __init__(self, bar):
+                self.bar = Qux(bar)
+        TO_SORT = [Foo('b'), Foo('a'), Foo('c')]
+        result = self._callFUT(TO_SORT, (('bar',),))
+        self.assertEqual([x.bar._spam for x in result], ['a', 'b', 'c'])
+
+    def test_w_methods(self):
+        class Foo(object):
+            def __init__(self, bar):
+                self._bar = bar
+            def bar(self):
+                return self._bar
+        TO_SORT = [Foo('b'), Foo('a'), Foo('c')]
+        result = self._callFUT(TO_SORT, (('bar',),))
+        self.assertEqual([x.bar() for x in result], ['a', 'b', 'c'])
+
+    def test_w_attribute_and_methods(self):
+        class Foo(object):
+            def __init__(self, bar, baz):
+                self._bar = bar
+                self.baz = baz
+            def bar(self):
+                return self._bar
+        TO_SORT = [Foo('b', 'Q'), Foo('b', 'p'), Foo('c', 'r')]
+        result = self._callFUT(TO_SORT, (('bar',), ('baz', 'nocase')))
+        self.assertEqual([(x.bar(), x.baz) for x in result],
+                         [('b', 'p'), ('b', 'Q'), ('c', 'r')])
+
+    def test_w_multi_and_non_basictype_key(self):
+        class Qux(object):
+            def __init__(self, spam):
+                self._spam = spam
+            def __cmp__(self, other):
+                return cmp(self._spam, other._spam)
+            def __lt__(self, other):
+                return self._spam < other._spam
+        class Foo(object):
+            def __init__(self, bar, baz):
+                self.bar = bar
+                self.baz = Qux(baz)
+        TO_SORT = [Foo('b', 'q'), Foo('b', 'p'), Foo('c', 'r')]
+        result = self._callFUT(TO_SORT, (('bar',), ('baz',)))
+        self.assertEqual([(x.bar, x.baz._spam) for x in result],
+                         [('b', 'p'), ('b', 'q'), ('c', 'r')])
+
     def test_wo_args(self):
         self.assertEqual(self._callFUT(WORDLIST), RES_WO_ARGS)
 
