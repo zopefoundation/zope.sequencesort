@@ -170,6 +170,18 @@ class Test_sort(unittest.TestCase):
                                 ), RES_W_CUSTOM_COMPARATOR)
 
 
+class Test_make_sortfunctions(unittest.TestCase):
+    """Test zope.sequencesort.sort()
+    """
+    def _callFUT(self, sortfields, _):
+        from zope.sequencesort.ssort import make_sortfunctions
+        return make_sortfunctions(sortfields, _)
+
+    def test_w_too_many_values(self):
+        self.assertRaises(SyntaxError, self._callFUT,
+                          (('bar', 'cmp', 'asc', 'bogus'),), None)
+
+
 WORDLIST = [
    {"key": "aaa", "word": "AAA", "weight": 1},
    {"key": "bbb", "word": "BBB", "weight": 0},
@@ -406,4 +418,5 @@ RES_W_CUSTOM_COMPARATOR = [
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(Test_sort),
+        unittest.makeSuite(Test_make_sortfunctions),
     ))
