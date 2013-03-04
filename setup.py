@@ -25,7 +25,7 @@ def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 setup(name="zope.sequencesort",
-      version = '4.0.1',
+      version = '4.0.2dev',
       author='Zope Foundation and Contributors',
       author_email='zope-dev@zope.org',
       description='Sequence Sorting',
