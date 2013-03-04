@@ -16,16 +16,27 @@ e.g .Sort(sequence, (("akey", "nocase"), ("anotherkey", "cmp", "desc")))
 """
 
 try:
-    cmp
+    cmp = cmp
 except NameError: #pragma NO COVER Py3k
     def cmp(lhs, rhs):
         return int(rhs < lhs) - int(lhs < rhs)
 
+class _Smallest(object):
+    """ Singleton:  sorts below any other value.
+    """
+    __slots__ = ()
+    def __lt__(self, other):
+        return True
+    def __eq__(self, other):
+        return other is self
+    def __gt__(self, other):
+        return False
+_Smallest = _Smallest()
+
 try:
     # Python 3.2+
     from functools import cmp_to_key
-except ImportError:
-    # Python 2.x
+except ImportError: #pragma NO COVER Python 2.x
     cmp_to_key = None
 
 
@@ -91,7 +102,7 @@ def sort(sequence, sort=(), _=None, mapping=0):
 
     s = []
     for client in sequence:
-        k = None
+        k = _Smallest
         if isinstance(client, tuple) and len(client) == 2:
             if isort:
                 k = client[0]
@@ -111,12 +122,13 @@ def sort(sequence, sort=(), _=None, mapping=0):
                         else:
                             akey = getattr(v, sk)
                     except (AttributeError, KeyError):
-                        akey = None
-                    if type(akey) not in BASIC_TYPES:
-                        try:
-                            akey = akey()
-                        except:
-                            pass
+                        akey = _Smallest
+                    else:
+                        if type(akey) not in BASIC_TYPES:
+                            try:
+                                akey = akey()
+                            except:
+                                pass
                     k.append(akey)
             else: # One sort key.
                 try:
@@ -125,7 +137,7 @@ def sort(sequence, sort=(), _=None, mapping=0):
                     else:
                         k = getattr(v, sort)
                 except (AttributeError, KeyError):
-                    k = None
+                    k = _Smallest
                 if type(k) not in BASIC_TYPES:
                     try:
                         k = k()
@@ -138,15 +150,12 @@ def sort(sequence, sort=(), _=None, mapping=0):
         by = SortBy(multsort, sf_list)
         if cmp_to_key is None:
             s.sort(by)
-        else:
+        else: #pragma NO COVER Py3k
             s.sort(key=cmp_to_key(by))
     else:
         s.sort()
 
-    sequence = []
-    for k, client in s:
-        sequence.append(client)
-    return sequence
+    return [x[1] for x in s]
 
 
 SortEx = sort

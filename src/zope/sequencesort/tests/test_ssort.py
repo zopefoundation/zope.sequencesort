@@ -13,6 +13,17 @@
 import unittest
 
 
+def _skip_on_Py3k(func):
+    import functools
+    import sys
+    if sys.version_info[0] > 2:
+        def _dummy(self):
+            pass
+        return functools.update_wrapper(_dummy, func)
+    return func
+
+
+
 class Test_sort(unittest.TestCase):
     """Test zope.sequencesort.sort()
     """
@@ -81,6 +92,7 @@ class Test_sort(unittest.TestCase):
                           [('ZZZ', 'YYY'), ('a', 'p'), ('a', 'r'), ('b', 'q')])
 
     def test_w_non_basictype_key(self):
+        from zope.sequencesort.ssort import cmp
         class Qux(object):
             def __init__(self, spam):
                 self._spam = spam
@@ -118,6 +130,7 @@ class Test_sort(unittest.TestCase):
                          [('b', 'p'), ('b', 'Q'), ('c', 'r')])
 
     def test_w_multi_and_non_basictype_key(self):
+        from zope.sequencesort.ssort import cmp
         class Qux(object):
             def __init__(self, spam):
                 self._spam = spam
@@ -134,6 +147,7 @@ class Test_sort(unittest.TestCase):
         self.assertEqual([(x.bar, x.baz._spam) for x in result],
                          [('b', 'p'), ('b', 'q'), ('c', 'r')])
 
+    @_skip_on_Py3k
     def test_wo_args(self):
         self.assertEqual(self._callFUT(WORDLIST), RES_WO_ARGS)
 
@@ -159,6 +173,7 @@ class Test_sort(unittest.TestCase):
                          RES_W_MULTI_KEY_NOCASE_DESC)
 
     def test_w_custom_comparator(self):
+        from zope.sequencesort.ssort import cmp
         def myCmp(s1, s2):
             return -cmp(s1, s2)
 
@@ -170,6 +185,7 @@ class Test_sort(unittest.TestCase):
                                 ), RES_W_CUSTOM_COMPARATOR)
 
     def test_w_custom_comparator_dtml_namespace(self):
+        from zope.sequencesort.ssort import cmp
         class Namespace(object):
             def __init__(self, **kw):
                 self.__dict__.update(kw)
