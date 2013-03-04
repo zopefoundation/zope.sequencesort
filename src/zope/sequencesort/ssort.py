@@ -14,13 +14,20 @@
 
 e.g .Sort(sequence, (("akey", "nocase"), ("anotherkey", "cmp", "desc")))
 """
-from types import TupleType
 
 try:
     cmp
 except NameError: #pragma NO COVER Py3k
     def cmp(lhs, rhs):
         return int(rhs < lhs) - int(lhs < rhs)
+
+try:
+    # Python 3.2+
+    from functools import cmp_to_key
+except ImportError:
+    # Python 2.x
+    cmp_to_key = None
+
 
 def sort(sequence, sort=(), _=None, mapping=0):
     """Return a sorted copy of 'sequence'.
@@ -85,7 +92,7 @@ def sort(sequence, sort=(), _=None, mapping=0):
     s = []
     for client in sequence:
         k = None
-        if type(client) == TupleType and len(client) == 2:
+        if isinstance(client, tuple) and len(client) == 2:
             if isort:
                 k = client[0]
             v = client[1]
@@ -129,7 +136,10 @@ def sort(sequence, sort=(), _=None, mapping=0):
 
     if need_sortfunc:
         by = SortBy(multsort, sf_list)
-        s.sort(by)
+        if cmp_to_key is None:
+            s.sort(by)
+        else:
+            s.sort(key=cmp_to_key(by))
     else:
         s.sort()
 
@@ -162,7 +172,7 @@ def nocase(str1, str2):
     return cmp(str1.lower(), str2.lower())
 
 import sys
-if sys.modules.has_key("locale"): # only if locale is already imported
+if "locale" in sys.modules: # only if locale is already imported
     from locale import strcoll
 
     def strcoll_nocase(str1, str2): #pragma NO COVER XXX global locale
