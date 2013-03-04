@@ -77,13 +77,13 @@ def sort(sequence, sort=(), _=None, mapping=0):
 
         # clean the mess a bit
         if multsort: # More than one sort key.
-            sortfields = map(lambda x: x[0], sf_list)
+            sortfields = [x[0] for x in sf_list]
         else:
             sort = sf_list[0][0]
 
     elif sort:
         if multsort: # More than one sort key.
-            sortfields = map(lambda x: x[0], sort)
+            sortfields = [x[0] for x in sort]
         else:
             sort = sort[0][0]
 
