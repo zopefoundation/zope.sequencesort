@@ -6,3 +6,7 @@ nosetests.xml
 *.pyc
 __pycache__
 docs/_build
+.installed.cfg
+bin
+develop-eggs
+eggs
