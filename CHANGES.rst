@@ -11,6 +11,10 @@
 
 - Add support for Python 3.4, 3.5, 3.6 and 3.7.
 
+- The locale comparison functions, ``strcoll`` and ``strcoll_nocase``
+  are always available, not only if the ``locale`` module had been
+  imported before this module.
+
 4.0.1 (2013-03-04)
 ==================
 

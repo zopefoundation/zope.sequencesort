@@ -1,4 +1,5 @@
 .. zope.sequencesort documentation master file, created by
+
 :mod:`zope.sequencesort`
 ========================
 
@@ -16,4 +17,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

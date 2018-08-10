@@ -10,3 +10,4 @@ docs/_build
 bin
 develop-eggs
 eggs
+htmlcov/
