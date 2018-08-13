@@ -15,10 +15,13 @@
 e.g .Sort(sequence, (("akey", "nocase"), ("anotherkey", "cmp", "desc")))
 """
 
+from functools import cmp_to_key
+from locale import strcoll
+
 try:
-    cmp = cmp
-except NameError: #pragma NO COVER Py3k
-    def cmp(lhs, rhs):
+    cmp = cmp # always put in our namespace; tests import it from here
+except NameError:
+    def cmp(lhs, rhs): # pylint:disable=redefined-builtin
         return int(rhs < lhs) - int(lhs < rhs)
 
 class _Smallest(object):
@@ -33,24 +36,18 @@ class _Smallest(object):
         return False
 _Smallest = _Smallest()
 
-try:
-    # Python 3.2+
-    from functools import cmp_to_key
-except ImportError: #pragma NO COVER Python 2.x
-    cmp_to_key = None
 
 
 def sort(sequence, sort=(), _=None, mapping=0):
     """Return a sorted copy of 'sequence'.
 
-    - sequence is a sequence of objects to be sorted
-
-    - sort is a sequence of tuples (key,func,direction)
+    :param sequence: is a sequence of objects to be sorted
+    :param sort: is a sequence of tuples (key,func,direction)
       that define the sort order:
 
-      - key is the name of an attribute to sort the objects by
+      - *key* is the name of an attribute to sort the objects by
 
-      - func is the name of a comparison function. This parameter is
+      - *func* is the name of a comparison function. This parameter is
         optional
 
         allowed values:
@@ -66,7 +63,7 @@ def sort(sequence, sort=(), _=None, mapping=0):
 
         - "xxx" -- a user-defined comparison function
 
-      - direction -- defines the sort direction for the key (optional).
+      - *direction* defines the sort direction for the key (optional).
         (allowed values: "asc" (default) , "desc")
     """
     need_sortfunc = 0
@@ -124,10 +121,10 @@ def sort(sequence, sort=(), _=None, mapping=0):
                     except (AttributeError, KeyError):
                         akey = _Smallest
                     else:
-                        if type(akey) not in BASIC_TYPES:
+                        if not isinstance(akey, BASIC_TYPES):
                             try:
                                 akey = akey()
-                            except:
+                            except: # pylint:disable=bare-except
                                 pass
                     k.append(akey)
             else: # One sort key.
@@ -138,20 +135,17 @@ def sort(sequence, sort=(), _=None, mapping=0):
                         k = getattr(v, sort)
                 except (AttributeError, KeyError):
                     k = _Smallest
-                if type(k) not in BASIC_TYPES:
+                if not isinstance(k, BASIC_TYPES):
                     try:
                         k = k()
-                    except:
+                    except: # pylint:disable=bare-except
                         pass
 
-        s.append((k,client))
+        s.append((k, client))
 
     if need_sortfunc:
         by = SortBy(multsort, sf_list)
-        if cmp_to_key is None:
-            s.sort(by)
-        else: #pragma NO COVER Py3k
-            s.sort(key=cmp_to_key(by))
+        s.sort(key=cmp_to_key(by))
     else:
         s.sort()
 
@@ -160,38 +154,37 @@ def sort(sequence, sort=(), _=None, mapping=0):
 
 SortEx = sort
 
-BASIC_TYPES = {
-    type(''): 1,
-    type(b''): 1,
-    type(0): 1,
-    type(0.0): 1,
-    type(()): 1,
-    type([]): 1,
-    type(None) : 1,
-}
+BASIC_TYPES = (
+    type(u''),
+    type(b''),
+    type(0),
+    type(0.0),
+    type(()),
+    type([]),
+    type(None)
+)
 
-try:
-    unicode
-except NameError: #pragma NO COVER Py3k
-    pass
-else: #pragma NO COVER Python 2
-    BASIC_TYPES[unicode] = 1
 
 def nocase(str1, str2):
     return cmp(str1.lower(), str2.lower())
 
-import sys
-if "locale" in sys.modules: # only if locale is already imported
-    from locale import strcoll
 
-    def strcoll_nocase(str1, str2): #pragma NO COVER XXX global locale
-        return strcoll(str1.lower(), str2.lower())
+def strcoll_nocase(str1, str2):
+    return strcoll(str1.lower(), str2.lower())
 
+_SORT_FUNCTIONS = {
+    "cmp": cmp, # builtin
+    "nocase": nocase,
+    "locale": strcoll,
+    "strcoll": strcoll,
+    "locale_nocase": strcoll_nocase,
+    "strcoll_nocase": strcoll_nocase,
+}
 
 def make_sortfunctions(sortfields, _):
     """Accepts a list of sort fields; splits every field, finds comparison
     function. Returns a list of 3-tuples (field, cmp_function, asc_multplier)"""
-
+    # pylint:disable=too-many-branches
     sf_list = []
     for field in sortfields:
         info = list(field)
@@ -211,15 +204,9 @@ def make_sortfunctions(sortfields, _):
         f_name = info[1]
 
         # predefined function?
-        if f_name == "cmp":
-            func = cmp # builtin
-        elif f_name == "nocase":
-            func = nocase
-        elif f_name in ("locale", "strcoll"): #pragma NO COVER
-            func = strcoll
-        elif f_name in ("locale_nocase", "strcoll_nocase"): #pragma NO COVER
-            func = strcoll_nocase
-        else: # no - look it up in the namespace
+        func = _SORT_FUNCTIONS.get(f_name)
+        # no - look it up in the namespace
+        if func is None:
             if hasattr(_, 'getitem'):
                 # support for zope.documenttemplate.dt_util.TemplateDict
                 func = _.getitem(f_name, 0)

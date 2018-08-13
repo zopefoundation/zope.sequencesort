@@ -11,22 +11,15 @@
 #
 ##############################################################################
 import unittest
+import sys
 
-
-def _skip_on_Py3k(func):
-    import functools
-    import sys
-    if sys.version_info[0] > 2:
-        def _dummy(self):
-            pass
-        return functools.update_wrapper(_dummy, func)
-    return func
-
+# we have a lot of "foo" and "bar"
+# pylint:disable=blacklisted-name
+# pylint:disable=protected-access
 
 
 class Test_sort(unittest.TestCase):
-    """Test zope.sequencesort.sort()
-    """
+
     def _callFUT(self, *args, **kw):
         from zope.sequencesort.ssort import sort
         return sort(*args, **kw)
@@ -51,6 +44,14 @@ class Test_sort(unittest.TestCase):
         result = self._callFUT(TO_SORT, (('bar', 'nocase'),))
         self.assertEqual([x.bar for x in result], ['A', 'b', 'C'])
 
+    def test_w_attributes_strcoll_nocase(self):
+        class Foo(object):
+            def __init__(self, bar):
+                self.bar = bar
+        TO_SORT = [Foo('b'), Foo('A'), Foo('C')]
+        result = self._callFUT(TO_SORT, (('bar', 'strcoll_nocase'),))
+        self.assertEqual([x.bar for x in result], ['A', 'b', 'C'])
+
     def test_w_attributes_missing(self):
         class Foo(object):
             def __init__(self, bar):
@@ -58,7 +59,7 @@ class Test_sort(unittest.TestCase):
         TO_SORT = [Foo('b'), Foo('a'), Foo('c'), object()]
         result = self._callFUT(TO_SORT, (('bar',),))
         self.assertEqual([getattr(x, 'bar', 'ZZZ') for x in result],
-                          ['ZZZ', 'a', 'b', 'c'])
+                         ['ZZZ', 'a', 'b', 'c'])
 
     def test_w_multi_attributes(self):
         class Foo(object):
@@ -68,7 +69,7 @@ class Test_sort(unittest.TestCase):
         TO_SORT = [Foo('b', 'q'), Foo('a', 'r'), Foo('c', 's'), Foo('a', 'p')]
         result = self._callFUT(TO_SORT, (('bar',), ('baz',)))
         self.assertEqual([(x.bar, x.baz) for x in result],
-                          [('a', 'p'), ('a', 'r'), ('b', 'q'), ('c', 's')])
+                         [('a', 'p'), ('a', 'r'), ('b', 'q'), ('c', 's')])
 
     def test_w_multi_attributes_nocase(self):
         class Foo(object):
@@ -78,7 +79,7 @@ class Test_sort(unittest.TestCase):
         TO_SORT = [Foo('b', 'q'), Foo('a', 'R'), Foo('c', 's'), Foo('a', 'p')]
         result = self._callFUT(TO_SORT, (('bar',), ('baz', 'nocase'),))
         self.assertEqual([(x.bar, x.baz) for x in result],
-                          [('a', 'p'), ('a', 'R'), ('b', 'q'), ('c', 's')])
+                         [('a', 'p'), ('a', 'R'), ('b', 'q'), ('c', 's')])
 
     def test_w_multi_attributes_missing(self):
         class Foo(object):
@@ -88,18 +89,16 @@ class Test_sort(unittest.TestCase):
         TO_SORT = [Foo('b', 'q'), Foo('a', 'r'), object(), Foo('a', 'p')]
         result = self._callFUT(TO_SORT, (('bar',), ('baz',)))
         self.assertEqual([(getattr(x, 'bar', 'ZZZ'), getattr(x, 'baz', 'YYY'))
-                                for x in result],
-                          [('ZZZ', 'YYY'), ('a', 'p'), ('a', 'r'), ('b', 'q')])
+                          for x in result],
+                         [('ZZZ', 'YYY'), ('a', 'p'), ('a', 'r'), ('b', 'q')])
 
     def test_w_non_basictype_key(self):
-        from zope.sequencesort.ssort import cmp
+        from zope.sequencesort.ssort import cmp as compare
         class Qux(object):
             def __init__(self, spam):
                 self._spam = spam
-            def __cmp__(self, other):
-                return cmp(self._spam, other._spam)
             def __lt__(self, other):
-                return self._spam < other._spam
+                return compare(self._spam, other._spam) < 0
         class Foo(object):
             def __init__(self, bar):
                 self.bar = Qux(bar)
@@ -130,14 +129,12 @@ class Test_sort(unittest.TestCase):
                          [('b', 'p'), ('b', 'Q'), ('c', 'r')])
 
     def test_w_multi_and_non_basictype_key(self):
-        from zope.sequencesort.ssort import cmp
+        from zope.sequencesort.ssort import cmp as compare
         class Qux(object):
             def __init__(self, spam):
                 self._spam = spam
-            def __cmp__(self, other):
-                return cmp(self._spam, other._spam)
             def __lt__(self, other):
-                return self._spam < other._spam
+                return compare(self._spam, other._spam) < 0
         class Foo(object):
             def __init__(self, bar, baz):
                 self.bar = bar
@@ -147,9 +144,13 @@ class Test_sort(unittest.TestCase):
         self.assertEqual([(x.bar, x.baz._spam) for x in result],
                          [('b', 'p'), ('b', 'q'), ('c', 'r')])
 
-    @_skip_on_Py3k
+
     def test_wo_args(self):
-        self.assertEqual(self._callFUT(WORDLIST), RES_WO_ARGS)
+        if sys.version_info[0] < 3: # pragma: no cover
+            self.assertEqual(self._callFUT(WORDLIST), RES_WO_ARGS)
+        else:
+            with self.assertRaises(TypeError):
+                self._callFUT(WORDLIST)
 
     def test_w_only_key(self):
         self.assertEqual(self._callFUT(WORDLIST, (("key",),), mapping=1),
@@ -168,24 +169,28 @@ class Test_sort(unittest.TestCase):
                                        mapping=1), RES_W_MULTI_KEY)
 
     def test_w_multi_key_nocase_desc(self):
-        self.assertEqual(self._callFUT(WORDLIST, (("weight",),
-                                       ("key", "nocase", "desc")), mapping=1),
-                         RES_W_MULTI_KEY_NOCASE_DESC)
+        self.assertEqual(
+            self._callFUT(WORDLIST, (("weight",),
+                                     ("key", "nocase", "desc")), mapping=1),
+            RES_W_MULTI_KEY_NOCASE_DESC)
 
     def test_w_custom_comparator(self):
-        from zope.sequencesort.ssort import cmp
+        from zope.sequencesort.ssort import cmp as compare
         def myCmp(s1, s2):
-            return -cmp(s1, s2)
+            return -compare(s1, s2)
 
         md = {"myCmp" : myCmp}
-        self.assertEqual(self._callFUT(WORDLIST,
-                                (("weight",), ("key", "myCmp", "desc")),
-                                md,
-                                mapping=1
-                                ), RES_W_CUSTOM_COMPARATOR)
+        self.assertEqual(
+            self._callFUT(
+                WORDLIST,
+                (("weight",), ("key", "myCmp", "desc")),
+                md,
+                mapping=1
+            ),
+            RES_W_CUSTOM_COMPARATOR)
 
     def test_w_custom_comparator_dtml_namespace(self):
-        from zope.sequencesort.ssort import cmp
+        from zope.sequencesort.ssort import cmp as compare
         class Namespace(object):
             def __init__(self, **kw):
                 self.__dict__.update(kw)
@@ -193,20 +198,22 @@ class Test_sort(unittest.TestCase):
                 return getattr(self, name, default)
 
         def myCmp(s1, s2):
-            return -cmp(s1, s2)
+            return -compare(s1, s2)
 
         ns = Namespace(myCmp=myCmp)
 
-        self.assertEqual(self._callFUT(WORDLIST,
-                                (("weight",), ("key", "myCmp", "desc")),
-                                ns,
-                                mapping=1
-                                ), RES_W_CUSTOM_COMPARATOR)
+        self.assertEqual(
+            self._callFUT(
+                WORDLIST,
+                (("weight",), ("key", "myCmp", "desc")),
+                ns,
+                mapping=1
+            ),
+            RES_W_CUSTOM_COMPARATOR)
 
 
 class Test_make_sortfunctions(unittest.TestCase):
-    """Test zope.sequencesort.sort()
-    """
+
     def _callFUT(self, sortfields, _):
         from zope.sequencesort.ssort import make_sortfunctions
         return make_sortfunctions(sortfields, _)
@@ -279,32 +286,32 @@ class SortByTests(unittest.TestCase):
 
 
 WORDLIST = [
-   {"key": "aaa", "word": "AAA", "weight": 1},
-   {"key": "bbb", "word": "BBB", "weight": 0},
-   {"key": "ccc", "word": "CCC", "weight": 0},
-   {"key": "ddd", "word": "DDD", "weight": 0},
-   {"key": "eee", "word": "EEE", "weight": 1},
-   {"key": "fff", "word": "FFF", "weight": 0},
-   {"key": "ggg", "word": "GGG", "weight": 0},
-   {"key": "hhh", "word": "HHH", "weight": 0},
-   {"key": "iii", "word": "III", "weight": 1},
-   {"key": "jjj", "word": "JJJ", "weight": -1},
-   {"key": "kkk", "word": "KKK", "weight": 0},
-   {"key": "lll", "word": "LLL", "weight": 0},
-   {"key": "mmm", "word": "MMM", "weight": 0},
-   {"key": "nnn", "word": "NNN", "weight": 0},
-   {"key": "ooo", "word": "OOO", "weight": 1},
-   {"key": "ppp", "word": "PPP", "weight": 0},
-   {"key": "qqq", "word": "QQQ", "weight": -1},
-   {"key": "rrr", "word": "RRR", "weight": 0},
-   {"key": "sss", "word": "SSS", "weight": 0},
-   {"key": "ttt", "word": "TTT", "weight": 0},
-   {"key": "uuu", "word": "UUU", "weight": 1},
-   {"key": "vvv", "word": "VVV", "weight": 0},
-   {"key": "www", "word": "WWW", "weight": 0},
-   {"key": "xxx", "word": "XXX", "weight": 0},
-   {"key": "yyy", "word": "YYY", "weight": -1},
-   {"key": "zzz", "word": "ZZZ", "weight": 0}
+    {"key": "aaa", "word": "AAA", "weight": 1},
+    {"key": "bbb", "word": "BBB", "weight": 0},
+    {"key": "ccc", "word": "CCC", "weight": 0},
+    {"key": "ddd", "word": "DDD", "weight": 0},
+    {"key": "eee", "word": "EEE", "weight": 1},
+    {"key": "fff", "word": "FFF", "weight": 0},
+    {"key": "ggg", "word": "GGG", "weight": 0},
+    {"key": "hhh", "word": "HHH", "weight": 0},
+    {"key": "iii", "word": "III", "weight": 1},
+    {"key": "jjj", "word": "JJJ", "weight": -1},
+    {"key": "kkk", "word": "KKK", "weight": 0},
+    {"key": "lll", "word": "LLL", "weight": 0},
+    {"key": "mmm", "word": "MMM", "weight": 0},
+    {"key": "nnn", "word": "NNN", "weight": 0},
+    {"key": "ooo", "word": "OOO", "weight": 1},
+    {"key": "ppp", "word": "PPP", "weight": 0},
+    {"key": "qqq", "word": "QQQ", "weight": -1},
+    {"key": "rrr", "word": "RRR", "weight": 0},
+    {"key": "sss", "word": "SSS", "weight": 0},
+    {"key": "ttt", "word": "TTT", "weight": 0},
+    {"key": "uuu", "word": "UUU", "weight": 1},
+    {"key": "vvv", "word": "VVV", "weight": 0},
+    {"key": "www", "word": "WWW", "weight": 0},
+    {"key": "xxx", "word": "XXX", "weight": 0},
+    {"key": "yyy", "word": "YYY", "weight": -1},
+    {"key": "zzz", "word": "ZZZ", "weight": 0}
 ]
 
 RES_WO_ARGS = [
@@ -512,8 +519,4 @@ RES_W_CUSTOM_COMPARATOR = [
 
 
 def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(Test_sort),
-        unittest.makeSuite(Test_make_sortfunctions),
-        unittest.makeSuite(SortByTests),
-    ))
+    return unittest.defaultTestLoader.loadTestsFromName(__name__)

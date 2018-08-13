@@ -22,47 +22,58 @@ import os
 from setuptools import setup, find_packages
 
 def read(*rnames):
-    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+    with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
+        return f.read()
 
-setup(name="zope.sequencesort",
-      version = '4.0.2dev',
-      author='Zope Foundation and Contributors',
-      author_email='zope-dev@zope.org',
-      description='Sequence Sorting',
-      long_description=(
-          read('README.txt')
-          + '\n\n' +
-          read('CHANGES.txt')
-          ),
-      keywords = "zope3 sequence sort",
-      classifiers = [
-          'Development Status :: 5 - Production/Stable',
-          'Environment :: Web Environment',
-          'Intended Audience :: Developers',
-          'License :: OSI Approved :: Zope Public License',
-          'Programming Language :: Python',
-          'Programming Language :: Python :: 2',
-          'Programming Language :: Python :: 2.6',
-          'Programming Language :: Python :: 2.7',
-          'Programming Language :: Python :: 3',
-          'Programming Language :: Python :: 3.2',
-          'Programming Language :: Python :: 3.3',
-          "Programming Language :: Python :: Implementation :: CPython",
-          "Programming Language :: Python :: Implementation :: PyPy",
-          'Natural Language :: English',
-          'Operating System :: OS Independent',
-          'Topic :: Internet :: WWW/HTTP',
-          'Framework :: Zope3'],
-      url='http://cheeseshop.python.org/pypi/zope.sequencesort',
-      license='ZPL 2.1',
-      packages=find_packages('src'),
-      package_dir = {'': 'src'},
-      namespace_packages=['zope'],
-      test_suite='zope.sequencesort',
-      extras_require={'docs': ['Sphinx'],
-                      'testing': ['nose', 'coverage'],
-                     },
-      install_requires = ['setuptools'],
-      include_package_data=True,
-      zip_safe = False
-      )
+setup(
+    name="zope.sequencesort",
+    version='4.1.0.dev0',
+    author='Zope Foundation and Contributors',
+    author_email='zope-dev@zope.org',
+    description='Sequence Sorting',
+    long_description=(
+        read('README.rst')
+        + '\n\n' +
+        read('CHANGES.rst')
+    ),
+    keywords="zope3 sequence sort",
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Web Environment',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: Zope Public License',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        "Programming Language :: Python :: Implementation :: CPython",
+        "Programming Language :: Python :: Implementation :: PyPy",
+        'Natural Language :: English',
+        'Operating System :: OS Independent',
+        'Topic :: Internet :: WWW/HTTP',
+        'Framework :: Zope3',
+    ],
+    url='https://github.com/zopefoundation/zope.sequencesort',
+    license='ZPL 2.1',
+    packages=find_packages('src'),
+    package_dir={'': 'src'},
+    namespace_packages=['zope'],
+    test_suite='zope.sequencesort',
+    extras_require={
+        'docs': [
+            'Sphinx',
+        ],
+        'test': [
+            'zope.testrunner',
+        ],
+    },
+    install_requires=[
+        'setuptools',
+    ],
+    include_package_data=True,
+    zip_safe=False
+)
