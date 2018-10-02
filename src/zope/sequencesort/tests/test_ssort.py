@@ -17,6 +17,17 @@ import sys
 # pylint:disable=blacklisted-name
 # pylint:disable=protected-access
 
+# for sorting objects that are sortable but do not have any other attributes
+# or string-like behavior
+class _Broken(object):
+    def __lt__(self, other):
+        return True
+    def __eq__(self, other):
+        return other is self
+
+class _OK(object):
+    def __init__(self, _id):
+        self.id = _id
 
 class Test_sort(unittest.TestCase):
 
@@ -210,6 +221,51 @@ class Test_sort(unittest.TestCase):
                 mapping=1
             ),
             RES_W_CUSTOM_COMPARATOR)
+
+    def test_w_sort_broken(self):
+        _broken = _Broken()
+        _ok = _OK('test')
+        self.assertEqual(
+                self._callFUT([_ok, _broken]),
+                [_broken, _ok]
+                )
+
+    def test_w_sort_broken_with_key(self):
+        _broken = _Broken()
+        _ok = _OK('test')
+        self.assertEqual(
+                self._callFUT([_ok, _broken], [('id',),]),
+                [_broken, _ok]
+                )
+    
+    def test_w_sort_broken_with_key_locale(self):
+        # testing actual unicode literals to be sorted correctly has the
+        # problem that one can not assume that there is any locale actually
+        # installed on the system. But we can test if a broken object can be
+        # compared with a correct one even for a sorting that assumes stringy
+        # behavior
+        _broken = _Broken()
+        v1 = _OK(u'test')
+        self.assertEqual(
+                self._callFUT([v1,_broken], [('id','locale',),]),
+                [_broken, v1]
+                )
+        self.assertEqual(
+                self._callFUT([_broken,v1], [('id','locale',),]),
+                [_broken, v1]
+                )
+
+    def test_w_sort_broken_with_key_locale_nocase(self):
+        _broken = _Broken()
+        v1 = _OK(u'test')
+        self.assertEqual(
+                self._callFUT([v1,_broken], [('id','locale_nocase',),]),
+                [_broken, v1]
+                )
+        self.assertEqual(
+                self._callFUT([_broken,v1], [('id','locale_nocase',),]),
+                [_broken, v1]
+                )
 
 
 class Test_make_sortfunctions(unittest.TestCase):
