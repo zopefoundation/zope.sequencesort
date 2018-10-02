@@ -256,6 +256,10 @@ class SortBy(object):
             # if not multsort - i is 0, and the 0th element is the key
             c1, c2 = o1[i], o2[i]
             func, multiplier = self.sf_list[i][1:3]
+            if c1 is _Smallest:
+                return -1
+            elif c2 is _Smallest:
+                return 1
             n = func(c1, c2)
             if n:
                 return n * multiplier
