@@ -2,7 +2,7 @@
  Changelog
 ===========
 
-4.1.1 (unreleased)
+4.1.1 (2018-10-05)
 ==================
 
 - Handle sorting of broken objects more gracefully.
