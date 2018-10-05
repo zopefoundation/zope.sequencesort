@@ -5,7 +5,8 @@
 4.1.1 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Handle sorting of broken objects more gracefully.
+  (`#4 <https://github.com/zopefoundation/zope.sequencesort/pull/4>`_)
 
 
 4.1.0 (2018-08-13)
