@@ -242,7 +242,6 @@ class SortBy(object):
         else:
             req_len = n_fields + 1
 
-
         # assert that o1 and o2 are tuples of apropriate length
         if len(o1) != req_len:
             raise ValueError("%s, %d" % (o1, req_len))
@@ -256,6 +255,8 @@ class SortBy(object):
             # if not multsort - i is 0, and the 0th element is the key
             c1, c2 = o1[i], o2[i]
             func, multiplier = self.sf_list[i][1:3]
+            if c1 is _Smallest and c2 is _Smallest:
+                return 0
             if c1 is _Smallest:
                 return -1
             elif c2 is _Smallest:
