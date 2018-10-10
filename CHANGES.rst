@@ -5,8 +5,8 @@
 4.2 (unreleased)
 ================
 
-- Fix regression introduced in 4.1.1 where to `_Smallest` objects are no longer
-  equal.
+- Fix regression introduced in 4.1.1 where two `_Smallest` objects are no
+  longer considered to be equal.
 
 
 4.1.1 (2018-10-05)
