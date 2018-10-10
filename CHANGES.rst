@@ -2,8 +2,8 @@
  Changelog
 ===========
 
-4.2 (unreleased)
-================
+4.1.2 (2018-10-10)
+==================
 
 - Fix regression introduced in 4.1.1 where two `_Smallest` objects are no
   longer considered to be equal.
