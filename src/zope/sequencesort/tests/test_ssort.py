@@ -340,6 +340,12 @@ class SortByTests(unittest.TestCase):
         self.assertEqual(sb((['a', 'q'], None), (['a', 'r'], None)), 1)
         self.assertEqual(sb((['b', 'p'], None), (['a', 'q'], None)), 1)
 
+    def test_smallest(self):
+        from zope.sequencesort.ssort import _Smallest
+        sb = self._makeOne(False, [self._makeField('bar')])
+        self.assertEqual(sb(('a', None), (_Smallest, None)), 1)
+        self.assertEqual(sb((_Smallest, None), ('a', None)), -1)
+        self.assertEqual(sb((_Smallest, None), (_Smallest, None)), 0)
 
 WORDLIST = [
     {"key": "aaa", "word": "AAA", "weight": 1},
