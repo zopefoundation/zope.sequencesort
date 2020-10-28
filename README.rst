@@ -6,8 +6,8 @@
    :target: https://pypi.org/project/zope.sequencesort/
    :alt: Latest Version
 
-.. image:: https://travis-ci.org/zopefoundation/zope.sequencesort.svg?branch=master
-   :target: https://travis-ci.org/zopefoundation/zope.sequencesort
+.. image:: https://travis-ci.com/zopefoundation/zope.sequencesort.svg?branch=master
+   :target: https://travis-ci.com/zopefoundation/zope.sequencesort
 
 .. image:: https://readthedocs.org/projects/zopesequencesort/badge/?version=latest
    :target: https://zopesequencesort.readthedocs.io/en/latest/?badge=latest
