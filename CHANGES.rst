@@ -5,7 +5,8 @@
 4.2 (unreleased)
 ================
 
-- Nothing changed yet.
+- Fix a TypeError exception in ``cmp`` when operands are ``None``.
+  (https://docs.python.org/3.0/whatsnew/3.0.html#ordering-comparisons)
 
 
 4.1.2 (2018-10-10)
