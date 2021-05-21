@@ -295,19 +295,7 @@ class SortByTests(unittest.TestCase):
 
     def _makeField(self, name, _cmp=None, multiplier=1):
         if _cmp is None:
-            try:
-                _cmp = cmp
-            except NameError:
-                def _cmp(lhs, rhs):
-                    if lhs is None:
-                        if rhs is None:
-                            return 0
-                        else:
-                            return -1
-                    elif rhs is None:
-                        return 1
-                    else:
-                        return (lhs > rhs) - (rhs > lhs)
+            from zope.sequencesort.ssort import cmp as _cmp
         return (name, _cmp, multiplier)
 
     def test_invalid_length_single(self):
