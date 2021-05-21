@@ -19,9 +19,9 @@ from functools import cmp_to_key
 from locale import strcoll
 
 try:
-    cmp = cmp # always put in our namespace; tests import it from here
+    cmp = cmp  # always put in our namespace; tests import it from here
 except NameError:
-    def cmp(lhs, rhs): # pylint:disable=redefined-builtin
+    def cmp(lhs, rhs):  # pylint:disable=redefined-builtin
         if lhs is None:
             if rhs is None:
                 return 0
@@ -32,18 +32,23 @@ except NameError:
         else:
             return (lhs > rhs) - (rhs > lhs)
 
+
 class _Smallest(object):
     """ Singleton:  sorts below any other value.
     """
     __slots__ = ()
+
     def __lt__(self, other):
         return True
+
     def __eq__(self, other):
         return other is self
+
     def __gt__(self, other):
         return False
-_Smallest = _Smallest()
 
+
+_Smallest = _Smallest()
 
 
 def sort(sequence, sort=(), _=None, mapping=0):
@@ -78,27 +83,27 @@ def sort(sequence, sort=(), _=None, mapping=0):
 
     if sort:
         for s in sort:
-            if len(s) > 1: # extended sort if there is reference to...
+            if len(s) > 1:  # extended sort if there is reference to...
                 # ...comparison function or sort order, even if they are
                 # "cmp" and "asc"
                 need_sortfunc = 1
                 break
 
-    sortfields = sort # multi sort = key1,key2
-    multsort = len(sortfields) > 1 # flag: is multiple sort
+    sortfields = sort  # multi sort = key1,key2
+    multsort = len(sortfields) > 1  # flag: is multiple sort
 
     if need_sortfunc:
         # prepare the list of functions and sort order multipliers
         sf_list = make_sortfunctions(sortfields, _)
 
         # clean the mess a bit
-        if multsort: # More than one sort key.
+        if multsort:  # More than one sort key.
             sortfields = [x[0] for x in sf_list]
         else:
             sort = sf_list[0][0]
 
     elif sort:
-        if multsort: # More than one sort key.
+        if multsort:  # More than one sort key.
             sortfields = [x[0] for x in sort]
         else:
             sort = sort[0][0]
@@ -118,7 +123,7 @@ def sort(sequence, sort=(), _=None, mapping=0):
             v = client
 
         if sort:
-            if multsort: # More than one sort key.
+            if multsort:  # More than one sort key.
                 k = []
                 for sk in sortfields:
                     try:
@@ -132,10 +137,10 @@ def sort(sequence, sort=(), _=None, mapping=0):
                         if not isinstance(akey, BASIC_TYPES):
                             try:
                                 akey = akey()
-                            except: # pylint:disable=bare-except
+                            except BaseException:  # pylint:disable=bare-except
                                 pass
                     k.append(akey)
-            else: # One sort key.
+            else:  # One sort key.
                 try:
                     if mapping:
                         k = v[sort]
@@ -146,7 +151,7 @@ def sort(sequence, sort=(), _=None, mapping=0):
                 if not isinstance(k, BASIC_TYPES):
                     try:
                         k = k()
-                    except: # pylint:disable=bare-except
+                    except BaseException:  # pylint:disable=bare-except
                         pass
 
         s.append((k, client))
@@ -180,8 +185,9 @@ def nocase(str1, str2):
 def strcoll_nocase(str1, str2):
     return strcoll(str1.lower(), str2.lower())
 
+
 _SORT_FUNCTIONS = {
-    "cmp": cmp, # builtin
+    "cmp": cmp,  # builtin
     "nocase": nocase,
     "locale": strcoll,
     "strcoll": strcoll,
@@ -189,9 +195,11 @@ _SORT_FUNCTIONS = {
     "strcoll_nocase": strcoll_nocase,
 }
 
+
 def make_sortfunctions(sortfields, _):
     """Accepts a list of sort fields; splits every field, finds comparison
-    function. Returns a list of 3-tuples (field, cmp_function, asc_multplier)"""
+    function. Returns a list of 3-tuples (field, cmp_function, asc_multplier)
+    """
     # pylint:disable=too-many-branches
     sf_list = []
     for field in sortfields:
@@ -244,7 +252,7 @@ class SortBy(object):
     def __call__(self, o1, o2):
         n_fields = len(self.sf_list)
         if self.multsort:
-            o1 = o1[0] # if multsort - take the first element (key list)
+            o1 = o1[0]  # if multsort - take the first element (key list)
             o2 = o2[0]
             req_len = n_fields
         else:

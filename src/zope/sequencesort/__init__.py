@@ -11,4 +11,4 @@
 #
 ##############################################################################
 
-from zope.sequencesort.ssort import sort
+from zope.sequencesort.ssort import sort   # noqa: F401 imported but unused
