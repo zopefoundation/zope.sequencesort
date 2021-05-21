@@ -22,7 +22,15 @@ try:
     cmp = cmp # always put in our namespace; tests import it from here
 except NameError:
     def cmp(lhs, rhs): # pylint:disable=redefined-builtin
-        return int(rhs < lhs) - int(lhs < rhs)
+        if lhs is None:
+            if rhs is None:
+                return 0
+            else:
+                return -1
+        elif rhs is None:
+            return 1
+        else:
+            return (lhs > rhs) - (rhs > lhs)
 
 class _Smallest(object):
     """ Singleton:  sorts below any other value.

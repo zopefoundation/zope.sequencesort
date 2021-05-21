@@ -295,11 +295,7 @@ class SortByTests(unittest.TestCase):
 
     def _makeField(self, name, _cmp=None, multiplier=1):
         if _cmp is None:
-            try:
-                _cmp = cmp
-            except NameError: #pragma NO COVER Py3k
-                def _cmp(lhs, rhs):
-                    return int(rhs < lhs) - int(lhs < rhs)
+            from zope.sequencesort.ssort import cmp as _cmp
         return (name, _cmp, multiplier)
 
     def test_invalid_length_single(self):
@@ -346,6 +342,16 @@ class SortByTests(unittest.TestCase):
         self.assertEqual(sb(('a', None), (_Smallest, None)), 1)
         self.assertEqual(sb((_Smallest, None), ('a', None)), -1)
         self.assertEqual(sb((_Smallest, None), (_Smallest, None)), 0)
+
+    def test_none(self):
+        sb = self._makeOne(False, [self._makeField('bar')])
+        self.assertEqual(sb((None, None), ('a', None)), -1)
+        self.assertEqual(sb((None, None), (100, None)), -1)
+        self.assertEqual(sb((None, None), (1.0, None)), -1)
+        self.assertEqual(sb((None, None), (None, None)), 0)
+        self.assertEqual(sb(('a', None), (None, None)), 1)
+        self.assertEqual(sb((100, None), (None, None)), 1)
+        self.assertEqual(sb((1.0, None), (None, None)), 1)
 
 WORDLIST = [
     {"key": "aaa", "word": "AAA", "weight": 1},

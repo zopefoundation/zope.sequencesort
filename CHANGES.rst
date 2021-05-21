@@ -5,7 +5,8 @@
 4.2 (unreleased)
 ================
 
-- Nothing changed yet.
+- Fix a TypeError exception in ``cmp`` when operands are ``None``.
+  See `issue 7 <https://github.com/zopefoundation/zope.sequencesort/issues/7>`_.
 
 
 4.1.2 (2018-10-10)
