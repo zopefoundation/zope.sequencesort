@@ -8,6 +8,10 @@
 - Fix a TypeError exception in ``cmp`` when operands are ``None``.
   See `issue 7 <https://github.com/zopefoundation/zope.sequencesort/issues/7>`_.
 
+- Drop support for Python 3.4.
+
+- Add support for Python 3.8 and 3.9.
+
 
 4.1.2 (2018-10-10)
 ==================

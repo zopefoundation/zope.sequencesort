@@ -19,15 +19,20 @@ import sys
 
 # for sorting objects that are sortable but do not have any other attributes
 # or string-like behavior
+
+
 class _Broken(object):
     def __lt__(self, other):
         return True
+
     def __eq__(self, other):
         return other is self
+
 
 class _OK(object):
     def __init__(self, _id):
         self.id = _id
+
 
 class Test_sort(unittest.TestCase):
 
@@ -105,11 +110,14 @@ class Test_sort(unittest.TestCase):
 
     def test_w_non_basictype_key(self):
         from zope.sequencesort.ssort import cmp as compare
+
         class Qux(object):
             def __init__(self, spam):
                 self._spam = spam
+
             def __lt__(self, other):
                 return compare(self._spam, other._spam) < 0
+
         class Foo(object):
             def __init__(self, bar):
                 self.bar = Qux(bar)
@@ -121,6 +129,7 @@ class Test_sort(unittest.TestCase):
         class Foo(object):
             def __init__(self, bar):
                 self._bar = bar
+
             def bar(self):
                 return self._bar
         TO_SORT = [Foo('b'), Foo('a'), Foo('c')]
@@ -132,6 +141,7 @@ class Test_sort(unittest.TestCase):
             def __init__(self, bar, baz):
                 self._bar = bar
                 self.baz = baz
+
             def bar(self):
                 return self._bar
         TO_SORT = [Foo('b', 'Q'), Foo('b', 'p'), Foo('c', 'r')]
@@ -141,11 +151,14 @@ class Test_sort(unittest.TestCase):
 
     def test_w_multi_and_non_basictype_key(self):
         from zope.sequencesort.ssort import cmp as compare
+
         class Qux(object):
             def __init__(self, spam):
                 self._spam = spam
+
             def __lt__(self, other):
                 return compare(self._spam, other._spam) < 0
+
         class Foo(object):
             def __init__(self, bar, baz):
                 self.bar = bar
@@ -155,9 +168,8 @@ class Test_sort(unittest.TestCase):
         self.assertEqual([(x.bar, x.baz._spam) for x in result],
                          [('b', 'p'), ('b', 'q'), ('c', 'r')])
 
-
     def test_wo_args(self):
-        if sys.version_info[0] < 3: # pragma: no cover
+        if sys.version_info[0] < 3:  # pragma: no cover
             self.assertEqual(self._callFUT(WORDLIST), RES_WO_ARGS)
         else:
             with self.assertRaises(TypeError):
@@ -187,10 +199,11 @@ class Test_sort(unittest.TestCase):
 
     def test_w_custom_comparator(self):
         from zope.sequencesort.ssort import cmp as compare
+
         def myCmp(s1, s2):
             return -compare(s1, s2)
 
-        md = {"myCmp" : myCmp}
+        md = {"myCmp": myCmp}
         self.assertEqual(
             self._callFUT(
                 WORDLIST,
@@ -202,9 +215,11 @@ class Test_sort(unittest.TestCase):
 
     def test_w_custom_comparator_dtml_namespace(self):
         from zope.sequencesort.ssort import cmp as compare
+
         class Namespace(object):
             def __init__(self, **kw):
                 self.__dict__.update(kw)
+
             def getitem(self, name, default):
                 return getattr(self, name, default)
 
@@ -226,18 +241,18 @@ class Test_sort(unittest.TestCase):
         _broken = _Broken()
         _ok = _OK('test')
         self.assertEqual(
-                self._callFUT([_ok, _broken]),
-                [_broken, _ok]
-                )
+            self._callFUT([_ok, _broken]),
+            [_broken, _ok]
+        )
 
     def test_w_sort_broken_with_key(self):
         _broken = _Broken()
         _ok = _OK('test')
         self.assertEqual(
-                self._callFUT([_ok, _broken], [('id',),]),
-                [_broken, _ok]
-                )
-    
+            self._callFUT([_ok, _broken], [('id',), ]),
+            [_broken, _ok]
+        )
+
     def test_w_sort_broken_with_key_locale(self):
         # testing actual unicode literals to be sorted correctly has the
         # problem that one can not assume that there is any locale actually
@@ -247,25 +262,25 @@ class Test_sort(unittest.TestCase):
         _broken = _Broken()
         v1 = _OK(u'test')
         self.assertEqual(
-                self._callFUT([v1,_broken], [('id','locale',),]),
-                [_broken, v1]
-                )
+            self._callFUT([v1, _broken], [('id', 'locale',), ]),
+            [_broken, v1]
+        )
         self.assertEqual(
-                self._callFUT([_broken,v1], [('id','locale',),]),
-                [_broken, v1]
-                )
+            self._callFUT([_broken, v1], [('id', 'locale',), ]),
+            [_broken, v1]
+        )
 
     def test_w_sort_broken_with_key_locale_nocase(self):
         _broken = _Broken()
         v1 = _OK(u'test')
         self.assertEqual(
-                self._callFUT([v1,_broken], [('id','locale_nocase',),]),
-                [_broken, v1]
-                )
+            self._callFUT([v1, _broken], [('id', 'locale_nocase',), ]),
+            [_broken, v1]
+        )
         self.assertEqual(
-                self._callFUT([_broken,v1], [('id','locale_nocase',),]),
-                [_broken, v1]
-                )
+            self._callFUT([_broken, v1], [('id', 'locale_nocase',), ]),
+            [_broken, v1]
+        )
 
 
 class Test_make_sortfunctions(unittest.TestCase):
@@ -286,6 +301,7 @@ class Test_make_sortfunctions(unittest.TestCase):
 class SortByTests(unittest.TestCase):
     """Test zope.sequencesort.sort()
     """
+
     def _getTargetClass(self):
         from zope.sequencesort.ssort import SortBy
         return SortBy
@@ -293,10 +309,9 @@ class SortByTests(unittest.TestCase):
     def _makeOne(self, multisort, sf_list):
         return self._getTargetClass()(multisort, sf_list)
 
-    def _makeField(self, name, _cmp=None, multiplier=1):
-        if _cmp is None:
-            from zope.sequencesort.ssort import cmp as _cmp
-        return (name, _cmp, multiplier)
+    def _makeField(self, name, multiplier=1):
+        from zope.sequencesort.ssort import cmp
+        return (name, cmp, multiplier)
 
     def test_invalid_length_single(self):
         sb = self._makeOne(False, [self._makeField('bar')])
@@ -352,6 +367,7 @@ class SortByTests(unittest.TestCase):
         self.assertEqual(sb(('a', None), (None, None)), 1)
         self.assertEqual(sb((100, None), (None, None)), 1)
         self.assertEqual(sb((1.0, None), (None, None)), 1)
+
 
 WORDLIST = [
     {"key": "aaa", "word": "AAA", "weight": 1},
