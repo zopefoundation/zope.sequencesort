@@ -309,10 +309,9 @@ class SortByTests(unittest.TestCase):
     def _makeOne(self, multisort, sf_list):
         return self._getTargetClass()(multisort, sf_list)
 
-    def _makeField(self, name, _cmp=None, multiplier=1):
-        if _cmp is None:
-            from zope.sequencesort.ssort import cmp as _cmp
-        return (name, _cmp, multiplier)
+    def _makeField(self, name, multiplier=1):
+        from zope.sequencesort.ssort import cmp
+        return (name, cmp, multiplier)
 
     def test_invalid_length_single(self):
         sb = self._makeOne(False, [self._makeField('bar')])
