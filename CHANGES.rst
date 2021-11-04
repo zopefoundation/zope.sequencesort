@@ -10,7 +10,7 @@
 
 - Drop support for Python 3.4.
 
-- Add support for Python 3.8 and 3.9.
+- Add support for Python 3.8, 3.9 and 3.10.
 
 
 4.1.2 (2018-10-10)
