@@ -2,7 +2,7 @@
  Changelog
 ===========
 
-4.2 (unreleased)
+4.2 (2021-11-04)
 ================
 
 - Fix a TypeError exception in ``cmp`` when operands are ``None``.
