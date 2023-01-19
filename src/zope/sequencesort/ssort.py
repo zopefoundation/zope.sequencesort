@@ -19,19 +19,16 @@ from functools import cmp_to_key
 from locale import strcoll
 
 
-try:
-    cmp = cmp  # always put in our namespace; tests import it from here
-except NameError:
-    def cmp(lhs, rhs):  # pylint:disable=redefined-builtin
-        if lhs is None:
-            if rhs is None:
-                return 0
-            else:
-                return -1
-        elif rhs is None:
-            return 1
+def cmp(lhs, rhs):
+    if lhs is None:
+        if rhs is None:
+            return 0
         else:
-            return (lhs > rhs) - (rhs > lhs)
+            return -1
+    elif rhs is None:
+        return 1
+    else:
+        return (lhs > rhs) - (rhs > lhs)
 
 
 class _Smallest:
@@ -173,8 +170,8 @@ BASIC_TYPES = (
     bytes,
     int,
     float,
-    type(()),
-    type([]),
+    tuple,
+    list,
     type(None)
 )
 
@@ -188,7 +185,7 @@ def strcoll_nocase(str1, str2):
 
 
 _SORT_FUNCTIONS = {
-    "cmp": cmp,  # builtin
+    "cmp": cmp,
     "nocase": nocase,
     "locale": strcoll,
     "strcoll": strcoll,
