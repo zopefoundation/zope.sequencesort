@@ -18,6 +18,7 @@ e.g .Sort(sequence, (("akey", "nocase"), ("anotherkey", "cmp", "desc")))
 from functools import cmp_to_key
 from locale import strcoll
 
+
 try:
     cmp = cmp  # always put in our namespace; tests import it from here
 except NameError:

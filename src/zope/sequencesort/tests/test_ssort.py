@@ -10,8 +10,9 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-import unittest
 import sys
+import unittest
+
 
 # we have a lot of "foo" and "bar"
 # pylint:disable=blacklisted-name
