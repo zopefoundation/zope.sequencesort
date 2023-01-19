@@ -19,7 +19,9 @@
 """zope.sequencesort setup
 """
 import os
-from setuptools import setup, find_packages
+
+from setuptools import find_packages
+from setuptools import setup
 
 
 def read(*rnames):
@@ -29,7 +31,7 @@ def read(*rnames):
 
 setup(
     name="zope.sequencesort",
-    version='4.3.dev0',
+    version='5.0.dev0',
     author='Zope Foundation and Contributors',
     author_email='zope-dev@zope.org',
     description='Sequence Sorting',
@@ -45,17 +47,14 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Zope Public License',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
-        "Programming Language :: Python :: Implementation :: CPython",
-        "Programming Language :: Python :: Implementation :: PyPy",
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: Implementation :: CPython',
+        'Programming Language :: Python :: Implementation :: PyPy',
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Topic :: Internet :: WWW/HTTP',
@@ -66,7 +65,7 @@ setup(
     packages=find_packages('src'),
     package_dir={'': 'src'},
     namespace_packages=['zope'],
-    test_suite='zope.sequencesort',
+    python_requires='>=3.7',
     extras_require={
         'docs': [
             'Sphinx',

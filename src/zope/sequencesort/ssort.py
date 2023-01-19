@@ -18,22 +18,20 @@ e.g .Sort(sequence, (("akey", "nocase"), ("anotherkey", "cmp", "desc")))
 from functools import cmp_to_key
 from locale import strcoll
 
-try:
-    cmp = cmp  # always put in our namespace; tests import it from here
-except NameError:
-    def cmp(lhs, rhs):  # pylint:disable=redefined-builtin
-        if lhs is None:
-            if rhs is None:
-                return 0
-            else:
-                return -1
-        elif rhs is None:
-            return 1
+
+def cmp(lhs, rhs):
+    if lhs is None:
+        if rhs is None:
+            return 0
         else:
-            return (lhs > rhs) - (rhs > lhs)
+            return -1
+    elif rhs is None:
+        return 1
+    else:
+        return (lhs > rhs) - (rhs > lhs)
 
 
-class _Smallest(object):
+class _Smallest:
     """ Singleton:  sorts below any other value.
     """
     __slots__ = ()
@@ -168,12 +166,12 @@ def sort(sequence, sort=(), _=None, mapping=0):
 SortEx = sort
 
 BASIC_TYPES = (
-    type(u''),
-    type(b''),
-    type(0),
-    type(0.0),
-    type(()),
-    type([]),
+    str,
+    bytes,
+    int,
+    float,
+    tuple,
+    list,
     type(None)
 )
 
@@ -187,7 +185,7 @@ def strcoll_nocase(str1, str2):
 
 
 _SORT_FUNCTIONS = {
-    "cmp": cmp,  # builtin
+    "cmp": cmp,
     "nocase": nocase,
     "locale": strcoll,
     "strcoll": strcoll,
@@ -244,7 +242,7 @@ def make_sortfunctions(sortfields, _):
     return sf_list
 
 
-class SortBy(object):
+class SortBy:
     def __init__(self, multsort, sf_list):
         self.multsort = multsort
         self.sf_list = sf_list
