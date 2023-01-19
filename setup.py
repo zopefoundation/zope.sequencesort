@@ -65,7 +65,7 @@ setup(
     packages=find_packages('src'),
     package_dir={'': 'src'},
     namespace_packages=['zope'],
-    test_suite='zope.sequencesort',
+    python_requires='>=3.7',
     extras_require={
         'docs': [
             'Sphinx',

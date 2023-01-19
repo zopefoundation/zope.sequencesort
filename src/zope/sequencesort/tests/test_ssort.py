@@ -10,7 +10,6 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-import sys
 import unittest
 
 
@@ -22,7 +21,7 @@ import unittest
 # or string-like behavior
 
 
-class _Broken(object):
+class _Broken:
     def __lt__(self, other):
         return True
 
@@ -30,7 +29,7 @@ class _Broken(object):
         return other is self
 
 
-class _OK(object):
+class _OK:
     def __init__(self, _id):
         self.id = _id
 
@@ -46,7 +45,7 @@ class Test_sort(unittest.TestCase):
         self.assertEqual(self._callFUT(TUPLES), sorted(TUPLES))
 
     def test_w_attributes(self):
-        class Foo(object):
+        class Foo:
             def __init__(self, bar):
                 self.bar = bar
         TO_SORT = [Foo('b'), Foo('a'), Foo('c')]
@@ -54,7 +53,7 @@ class Test_sort(unittest.TestCase):
         self.assertEqual([x.bar for x in result], ['a', 'b', 'c'])
 
     def test_w_attributes_nocase(self):
-        class Foo(object):
+        class Foo:
             def __init__(self, bar):
                 self.bar = bar
         TO_SORT = [Foo('b'), Foo('A'), Foo('C')]
@@ -62,7 +61,7 @@ class Test_sort(unittest.TestCase):
         self.assertEqual([x.bar for x in result], ['A', 'b', 'C'])
 
     def test_w_attributes_strcoll_nocase(self):
-        class Foo(object):
+        class Foo:
             def __init__(self, bar):
                 self.bar = bar
         TO_SORT = [Foo('b'), Foo('A'), Foo('C')]
@@ -70,7 +69,7 @@ class Test_sort(unittest.TestCase):
         self.assertEqual([x.bar for x in result], ['A', 'b', 'C'])
 
     def test_w_attributes_missing(self):
-        class Foo(object):
+        class Foo:
             def __init__(self, bar):
                 self.bar = bar
         TO_SORT = [Foo('b'), Foo('a'), Foo('c'), object()]
@@ -79,7 +78,7 @@ class Test_sort(unittest.TestCase):
                          ['ZZZ', 'a', 'b', 'c'])
 
     def test_w_multi_attributes(self):
-        class Foo(object):
+        class Foo:
             def __init__(self, bar, baz):
                 self.bar = bar
                 self.baz = baz
@@ -89,7 +88,7 @@ class Test_sort(unittest.TestCase):
                          [('a', 'p'), ('a', 'r'), ('b', 'q'), ('c', 's')])
 
     def test_w_multi_attributes_nocase(self):
-        class Foo(object):
+        class Foo:
             def __init__(self, bar, baz):
                 self.bar = bar
                 self.baz = baz
@@ -99,7 +98,7 @@ class Test_sort(unittest.TestCase):
                          [('a', 'p'), ('a', 'R'), ('b', 'q'), ('c', 's')])
 
     def test_w_multi_attributes_missing(self):
-        class Foo(object):
+        class Foo:
             def __init__(self, bar, baz):
                 self.bar = bar
                 self.baz = baz
@@ -112,14 +111,14 @@ class Test_sort(unittest.TestCase):
     def test_w_non_basictype_key(self):
         from zope.sequencesort.ssort import cmp as compare
 
-        class Qux(object):
+        class Qux:
             def __init__(self, spam):
                 self._spam = spam
 
             def __lt__(self, other):
                 return compare(self._spam, other._spam) < 0
 
-        class Foo(object):
+        class Foo:
             def __init__(self, bar):
                 self.bar = Qux(bar)
         TO_SORT = [Foo('b'), Foo('a'), Foo('c')]
@@ -127,7 +126,7 @@ class Test_sort(unittest.TestCase):
         self.assertEqual([x.bar._spam for x in result], ['a', 'b', 'c'])
 
     def test_w_methods(self):
-        class Foo(object):
+        class Foo:
             def __init__(self, bar):
                 self._bar = bar
 
@@ -138,7 +137,7 @@ class Test_sort(unittest.TestCase):
         self.assertEqual([x.bar() for x in result], ['a', 'b', 'c'])
 
     def test_w_attribute_and_methods(self):
-        class Foo(object):
+        class Foo:
             def __init__(self, bar, baz):
                 self._bar = bar
                 self.baz = baz
@@ -153,14 +152,14 @@ class Test_sort(unittest.TestCase):
     def test_w_multi_and_non_basictype_key(self):
         from zope.sequencesort.ssort import cmp as compare
 
-        class Qux(object):
+        class Qux:
             def __init__(self, spam):
                 self._spam = spam
 
             def __lt__(self, other):
                 return compare(self._spam, other._spam) < 0
 
-        class Foo(object):
+        class Foo:
             def __init__(self, bar, baz):
                 self.bar = bar
                 self.baz = Qux(baz)
@@ -170,11 +169,8 @@ class Test_sort(unittest.TestCase):
                          [('b', 'p'), ('b', 'q'), ('c', 'r')])
 
     def test_wo_args(self):
-        if sys.version_info[0] < 3:  # pragma: no cover
-            self.assertEqual(self._callFUT(WORDLIST), RES_WO_ARGS)
-        else:
-            with self.assertRaises(TypeError):
-                self._callFUT(WORDLIST)
+        with self.assertRaises(TypeError):
+            self._callFUT(WORDLIST)
 
     def test_w_only_key(self):
         self.assertEqual(self._callFUT(WORDLIST, (("key",),), mapping=1),
@@ -217,7 +213,7 @@ class Test_sort(unittest.TestCase):
     def test_w_custom_comparator_dtml_namespace(self):
         from zope.sequencesort.ssort import cmp as compare
 
-        class Namespace(object):
+        class Namespace:
             def __init__(self, **kw):
                 self.__dict__.update(kw)
 
@@ -261,7 +257,7 @@ class Test_sort(unittest.TestCase):
         # compared with a correct one even for a sorting that assumes stringy
         # behavior
         _broken = _Broken()
-        v1 = _OK(u'test')
+        v1 = _OK('test')
         self.assertEqual(
             self._callFUT([v1, _broken], [('id', 'locale',), ]),
             [_broken, v1]
@@ -273,7 +269,7 @@ class Test_sort(unittest.TestCase):
 
     def test_w_sort_broken_with_key_locale_nocase(self):
         _broken = _Broken()
-        v1 = _OK(u'test')
+        v1 = _OK('test')
         self.assertEqual(
             self._callFUT([v1, _broken], [('id', 'locale_nocase',), ]),
             [_broken, v1]

@@ -34,7 +34,7 @@ except NameError:
             return (lhs > rhs) - (rhs > lhs)
 
 
-class _Smallest(object):
+class _Smallest:
     """ Singleton:  sorts below any other value.
     """
     __slots__ = ()
@@ -169,10 +169,10 @@ def sort(sequence, sort=(), _=None, mapping=0):
 SortEx = sort
 
 BASIC_TYPES = (
-    type(u''),
-    type(b''),
-    type(0),
-    type(0.0),
+    str,
+    bytes,
+    int,
+    float,
     type(()),
     type([]),
     type(None)
@@ -245,7 +245,7 @@ def make_sortfunctions(sortfields, _):
     return sf_list
 
 
-class SortBy(object):
+class SortBy:
     def __init__(self, multsort, sf_list):
         self.multsort = multsort
         self.sf_list = sf_list
