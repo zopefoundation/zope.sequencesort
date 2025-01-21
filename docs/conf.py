@@ -42,7 +42,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'zope.sequencesort'
-copyright = '2013, Zope Foundation Contributors'
+copyright = '2013-2025, Zope Foundation Contributors'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
