@@ -31,7 +31,7 @@ def read(*rnames):
 
 setup(
     name="zope.sequencesort",
-    version='5.1',
+    version='5.2.dev0',
     author='Zope Foundation and Contributors',
     author_email='zope-dev@zope.org',
     description='Sequence Sorting',
