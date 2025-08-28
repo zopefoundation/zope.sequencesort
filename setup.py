@@ -33,7 +33,7 @@ setup(
     name="zope.sequencesort",
     version='6.0.dev0',
     author='Zope Foundation and Contributors',
-    author_email='zope-dev@zope.org',
+    author_email='zope-dev@zope.dev',
     description='Sequence Sorting',
     long_description=(
         read('README.rst')
@@ -61,7 +61,7 @@ setup(
         'Framework :: Zope :: 3',
     ],
     url='https://github.com/zopefoundation/zope.sequencesort',
-    license='ZPL 2.1',
+    license='ZPL-2.1',
     packages=find_packages('src'),
     package_dir={'': 'src'},
     namespace_packages=['zope'],
