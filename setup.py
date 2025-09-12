@@ -20,7 +20,6 @@
 """
 import os
 
-from setuptools import find_packages
 from setuptools import setup
 
 
@@ -31,9 +30,9 @@ def read(*rnames):
 
 setup(
     name="zope.sequencesort",
-    version='5.2.dev0',
+    version='6.0.dev0',
     author='Zope Foundation and Contributors',
-    author_email='zope-dev@zope.org',
+    author_email='zope-dev@zope.dev',
     description='Sequence Sorting',
     long_description=(
         read('README.rst')
@@ -61,17 +60,14 @@ setup(
         'Framework :: Zope :: 3',
     ],
     url='https://github.com/zopefoundation/zope.sequencesort',
-    license='ZPL 2.1',
-    packages=find_packages('src'),
-    package_dir={'': 'src'},
-    namespace_packages=['zope'],
+    license='ZPL-2.1',
     python_requires='>=3.9',
     extras_require={
         'docs': [
             'Sphinx',
         ],
         'test': [
-            'zope.testrunner',
+            'zope.testrunner >= 6.4',
         ],
     },
     install_requires=[
