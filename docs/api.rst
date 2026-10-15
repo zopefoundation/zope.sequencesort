@@ -4,4 +4,3 @@
 .. automodule:: zope.sequencesort.ssort
 
 .. autofunction:: sort
-
